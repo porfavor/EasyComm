@@ -55,7 +55,7 @@ public class ActivityLogin extends Activity implements OnClickListener {
 					try {
 						XmppTool.getConnection().login(USERID, PWD);
 						//XmppTool.getConnection()
-						Log.i("XMPPClient", "Logged in as " + XmppTool.getConnection().getUser());
+						Log.i("ActivityLogin", "Logged in as " + XmppTool.getConnection().getUser());
 						// status
 						Presence presence = new Presence(Presence.Type.available);
 						XmppTool.getConnection().sendPacket(presence);

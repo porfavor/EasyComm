@@ -11,6 +11,7 @@ import com.coffeebean.easycomm.R;
 import com.coffeebean.easycomm.util.XmppTool;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,17 +35,20 @@ public class ActivityRoster extends Activity implements OnChildClickListener {
 
 	private ArrayList<String> groupArray;// 组列表
 	private ArrayList<ArrayList<String>> childArray;// 子列表
-	private ExpandableListView expandableListView_one;
+	private ExpandableListView expandableListView;
+	private String pUSERID, pCHATTER;
+	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);   
 		
+		this.pUSERID = getIntent().getStringExtra("USERID");
         setContentView(R.layout.expandablelistview);   
         
         groupArray = new ArrayList<String>();
         childArray = new ArrayList<ArrayList<String>>();
-        expandableListView_one =(ExpandableListView)findViewById(R.id.expandableListView);   
+        expandableListView =(ExpandableListView)findViewById(R.id.expandableListView);   
         
         Roster roster = XmppTool.getConnection().getRoster();
         
@@ -52,13 +56,13 @@ public class ActivityRoster extends Activity implements OnChildClickListener {
         Collection<RosterGroup> groups = roster.getGroups();
         Collection<RosterEntry> entries;
         for (RosterGroup group : groups) {
-        	Log.i("XMPPClient", "Group:" + group.getName());
+        	Log.i("ActivityRoster", "Group:" + group.getName());
             groupArray.add(group.getName());
             
             entries = group.getEntries();
             ArrayList<String> temp = new ArrayList<String>();
             for (RosterEntry entry : entries) {
-            	Log.i("XMPPClient", "Entry:" + entry.getName());
+            	Log.i("ActivityRoster", "Entry:" + entry.getName());
             	temp.add(entry.getName());
             }
             
@@ -94,8 +98,8 @@ public class ActivityRoster extends Activity implements OnChildClickListener {
         ExpandableListViewaAdapter adapter = new ExpandableListViewaAdapter(
         		this, groupArray, childArray
                 );   
-        expandableListView_one.setAdapter(adapter); 
-        expandableListView_one.setOnChildClickListener(this); 
+        expandableListView.setAdapter(adapter); 
+        expandableListView.setOnChildClickListener(this); 
 
 	}
 
@@ -158,6 +162,15 @@ public class ActivityRoster extends Activity implements OnChildClickListener {
                 public void onClick(View v) {
                     setSelectedPosition(groupPosition, childPosition);
                     notifyDataSetChanged();
+                    
+                    pCHATTER = (String)getChild(groupPosition, childPosition);
+                    //toast(chatter);
+                    Log.i("ActivityRoster", "child selected:" + pCHATTER);
+                    Intent intent = new Intent(ActivityRoster.this, ActivityChat.class);
+                    intent.putExtra("USERID", pUSERID);
+					intent.putExtra("CHATTER", pCHATTER);
+					startActivity(intent);
+					ActivityRoster.this.finish();
                 }
             });
             return textView;
